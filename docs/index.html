@@ -18,7 +18,7 @@
     color-scheme: light dark;
     --bg: #F2F2F7; --surface: #FFFFFF; --label: #000000; --label-2: #6C6C70; --label-3: #AEAEB2; --label-dim: #8A8A8E;
     --sep: rgba(60, 60, 67, .18); --track: #E3E3E8; --fill: rgba(118, 118, 128, .12); --seg-on: #FFFFFF;
-    --blue: #007AFF; --red: #FF3B30; --green: #248A3D; --pink: #FF2D55; --yellow: #FFCC00; --orange: #FF9500; --mint: #34C759;
+    --blue: #007AFF; --red: #FF3B30; --green: #248A3D; --pink: #FF2D55; --yellow: #FFCC00; --orange: #FF9500; --mint: #34C759; --gray: #A1A1A6;
     --band: #000000;
     --nav: rgba(242, 242, 247, .78);
     --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
@@ -30,7 +30,7 @@
     :root {
       --bg: #000000; --surface: #1C1C1E; --label: #FFFFFF; --label-2: #AEAEB2; --label-3: #636366; --label-dim: #6E6E73;
       --sep: rgba(84, 84, 88, .55); --track: #1C1C1E; --fill: rgba(118, 118, 128, .24); --seg-on: #636366;
-      --blue: #0A84FF; --red: #FF453A; --green: #30D158; --pink: #FF375F; --yellow: #FFD60A; --orange: #FF9F0A; --mint: #30D158;
+      --blue: #0A84FF; --red: #FF453A; --green: #30D158; --pink: #FF375F; --yellow: #FFD60A; --orange: #FF9F0A; --mint: #30D158; --gray: #636366;
       --band: #1C1C1E;
       --nav: rgba(0, 0, 0, .72);
     }
@@ -64,6 +64,11 @@
   .btn.plain { background: var(--fill); color: var(--blue); }
   .btn.plain:hover { background: color-mix(in srgb, var(--fill) 100%, var(--blue) 10%); }
   .btn .icon { font-size: 20px; }
+  .mark { width: 1.15em; height: 1.15em; flex: none; fill: currentColor; }
+  .btn.gh { background: var(--label); color: var(--bg); }
+  .btn.gh:hover { background: color-mix(in srgb, var(--label) 82%, var(--bg)); }
+  .nav .btn.gh { gap: 7px; }
+  @media (max-width: 640px) { .nav .btn.gh { padding: 0 9px; } }
 
   /* Nav */
   .nav {
@@ -97,7 +102,7 @@
     margin-top: clamp(4px, 1svh, 12px); font-weight: 800; letter-spacing: -.04em; line-height: .92;
     font-size: clamp(4rem, min(13.5vw, 22svh), 12.5rem); white-space: nowrap;
   }
-  .figure .of { color: var(--label-dim); font-weight: 600; }
+  .figure .of { color: var(--label-dim); font-weight: 600; font-size: .5em; letter-spacing: -.025em; }
   .bar {
     margin-top: clamp(20px, 4svh, 36px); height: clamp(56px, 12.5svh, 120px); display: flex; gap: 4px; padding: 4px;
     background: var(--track); border-radius: clamp(16px, 2.6svh, 28px); overflow: hidden;
@@ -114,7 +119,7 @@
 
   .foot { margin-top: clamp(40px, 8svh, 88px); display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
   .caps { flex: 1; max-width: 680px; }
-  .caps h1 { font-size: clamp(1.75rem, 3vw, 2.75rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; text-wrap: balance; }
+  .caps h1, .caps h2 { font-size: clamp(1.75rem, 3vw, 2.75rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; text-wrap: balance; }
   .ticker { position: relative; margin-top: 12px; }
   .cap { margin: 0; font-size: clamp(1rem, 1.35vw, 1.1875rem); line-height: 1.45; color: var(--label-2); max-width: 50ch; text-wrap: pretty; }
   .cap + .cap { margin-top: 14px; }
@@ -131,7 +136,7 @@
   .actions { display: flex; gap: 12px; flex: none; }
   @media (prefers-reduced-motion: reduce) { .js .cap { transform: none; filter: none; transition: opacity .2s; } }
   @media (max-width: 760px) {
-    .figure .of { display: block; font-size: .56em; letter-spacing: -.03em; margin-top: .12em; }
+    .figure .of { display: block; font-size: .5em; letter-spacing: -.03em; margin-top: .12em; }
     .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 14px; }
     .legend .note { grid-column: 1 / -1; font-size: 13px; }
     .foot { flex-direction: column; align-items: stretch; gap: 18px; }
@@ -198,17 +203,28 @@
   .later { padding-top: clamp(0px, 14vw, 212px); }
   @media (max-width: 900px) { .later { padding-top: 24px; } }
 
-  /* Close */
-  .close { text-align: center; padding-bottom: clamp(64px, 8vw, 112px); }
-  .close h2 { max-width: 12ch; margin: 0 auto; }
-  .mini { max-width: 760px; margin: 48px auto 0; }
-  .mini .bar { height: 44px; border-radius: 16px; margin: 0; }
-  .mini .bar i { border-radius: 12px; }
-  .mini p { margin-top: 14px; font-size: 17px; color: var(--label-2); }
-  .mini p b { color: var(--label); }
-  .close .actions { justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+  /* Finale: the result screen */
+  .finale {
+    --label: #F5F5F7; --label-2: #A1A1A6; --label-dim: #6E6E73; --track: #1C1C1E; --fill: rgba(118, 118, 128, .24);
+    --green: #30D158; --blue: #0A84FF; --mint: #30D158; --gray: #636366;
+    background: var(--band); color: var(--label); padding: clamp(96px, 12vw, 168px) var(--gutter) clamp(72px, 9vw, 128px);
+  }
+  @media (prefers-color-scheme: dark) { .finale { --track: #2C2C2E; } }
+  .fin-in { max-width: 1440px; margin: 0 auto; }
+  @media (max-width: 760px) { .finale .actions { flex-direction: column; } }
+  .finale .figure { margin-top: 12px; }
+  .finale .caps h2 { font-size: clamp(1.75rem, 3vw, 2.75rem); line-height: 1.08; letter-spacing: -.03em; }
+  .fin-sub { margin-top: 12px; font-size: clamp(1rem, 1.35vw, 1.1875rem); line-height: 1.45; color: var(--label-2); max-width: 50ch; text-wrap: pretty; }
+  .bar i.freed {
+    display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap;
+    background: color-mix(in srgb, var(--mint) 16%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--mint) 55%, transparent);
+    color: var(--mint); font-style: normal; font-weight: 700; font-size: clamp(14px, 1.5vw, 22px); letter-spacing: -.01em;
+  }
+  .finale .btn.gh { color: #1C1C1E; }
+  .finale .btn.gh:hover { background: #D2D2D7; }
   footer { padding: 28px var(--gutter) 40px; border-top: .5px solid var(--sep); font-size: 13px; color: var(--label-2); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
   footer a { color: var(--label-2); }
+  footer .me { color: var(--label); font-weight: 600; }
   footer a:hover { color: var(--label); }
 </style>
 </head>
@@ -218,6 +234,7 @@
   <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></symbol>
   <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
   <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></symbol>
+  <symbol id="i-gh" viewBox="0 0 16 16"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></symbol>
   <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
   <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.4A4.1 4.1 0 0 1 12 7.3a4.1 4.1 0 0 1 7.5 2.3C19.5 15.4 12 20 12 20z"/></symbol>
   <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 2.8v5.4c0 4.4-2.9 8-7 9.8-4.1-1.8-7-5.4-7-9.8V5.8z"/><path d="M9 12l2.2 2.2L15.2 10"/></symbol>
@@ -231,7 +248,7 @@
   <nav aria-label="Main">
     <a class="hide-s" href="#app">The app</a>
     <a class="hide-s" href="#safety">Safety</a>
-    <a class="hide-s" href="https://github.com/vassilidev/EvictLib">GitHub</a>
+    <a class="btn gh" href="https://github.com/vassilidev/EvictLib" aria-label="View on GitHub"><svg class="mark" aria-hidden="true"><use href="#i-gh"/></svg><span class="hide-s">View on GitHub</span></a>
     <a class="btn" href="#install">Get EvictLib</a>
   </nav>
 </header>
@@ -243,17 +260,18 @@
         <svg class="icon full"><use href="#i-alert"/></svg><svg class="icon ok"><use href="#i-check"/></svg>
         <span id="status-text">iCloud Storage Full</span>
       </p>
-      <p class="figure num"><span id="used">5</span> GB <span class="of">of 5 GB</span></p>
+      <p class="figure num"><span id="used">148</span> GB <span class="of">of photos</span></p>
       <div class="bar" id="bar" aria-hidden="true">
-        <i style="background:var(--pink); flex-basis:46%"></i><i style="background:var(--blue); flex-basis:28%"></i><i style="background:var(--yellow); flex-basis:11%"></i><i style="background:var(--orange); flex-basis:9%"></i><i style="background:var(--mint); flex-basis:6%"></i>
+        <i style="background:var(--pink); flex-basis:41%"></i><i style="background:var(--blue); flex-basis:19%"></i><i style="background:var(--yellow); flex-basis:7%"></i><i style="background:var(--orange); flex-basis:4.5%"></i><i style="background:var(--mint); flex-basis:2.5%"></i><i style="background:var(--gray); flex-basis:26%"></i>
       </div>
       <ul class="legend num" id="legend">
-        <li><span class="dot" style="background:var(--pink)"></span>Videos <b>2.3 GB</b></li>
-        <li><span class="dot" style="background:var(--blue)"></span>Photos <b>1.4 GB</b></li>
-        <li><span class="dot" style="background:var(--yellow)"></span>Live Photos <b>550 MB</b></li>
-        <li><span class="dot" style="background:var(--orange)"></span>Bursts <b>450 MB</b></li>
-        <li><span class="dot" style="background:var(--mint)"></span>Screenshots <b>300 MB</b></li>
-        <li class="note">Example library</li>
+        <li><span class="dot" style="background:var(--pink)"></span>Videos <b>82 GB</b></li>
+        <li><span class="dot" style="background:var(--blue)"></span>Photos <b>38 GB</b></li>
+        <li><span class="dot" style="background:var(--yellow)"></span>Live Photos <b>14 GB</b></li>
+        <li><span class="dot" style="background:var(--orange)"></span>Bursts <b>9 GB</b></li>
+        <li><span class="dot" style="background:var(--mint)"></span>Screenshots <b>5 GB</b></li>
+        <li><span class="dot" style="background:var(--gray)"></span>Other iCloud <b>52 GB</b></li>
+        <li class="note">Example: 200 GB iCloud plan</li>
         <li class="replay-li"><button class="replay" id="replay" type="button"><svg class="icon"><use href="#i-replay"/></svg>Replay</button></li>
       </ul>
       <div class="foot">
@@ -261,11 +279,11 @@
           <h1>Free up your iCloud Photos.</h1>
           <div class="ticker" id="caps" aria-live="polite">
             <p class="cap on"><b>Biggest items first.</b>No subscription, no quota, and nothing ever leaves your iPhone.</p>
-            <p class="cap"><b>Largest Items and Compress <span class="saved">−1.4 GB</span></b>Your library sorted by real file size. Heavy videos shrink to HEVC, photos to HEIC.</p>
-            <p class="cap"><b>Similar Photos and Bursts <span class="saved">−650 MB</span></b>Near-duplicates grouped, the best shot kept, the rest selected for you.</p>
-            <p class="cap"><b>Live Photos to stills <span class="saved">−350 MB</span></b>Drop the video half of the Live Photos you never play. The photo stays.</p>
-            <p class="cap"><b>Swipe <span class="saved">−400 MB</span></b>Left deletes, right keeps, up favorites. Heaviest first, with Undo.</p>
-            <p class="cap"><b>2.8 GB back in one session.</b>Empty Recently Deleted in Photos and the space shows up in iCloud.</p>
+            <p class="cap"><b>Largest Items and Compress <span class="saved">−22 GB</span></b>Your library sorted by real file size. Heavy videos shrink to HEVC, photos to HEIC.</p>
+            <p class="cap"><b>Similar Photos and Bursts <span class="saved">−10 GB</span></b>Near-duplicates grouped, the best shot kept, the rest selected for you.</p>
+            <p class="cap"><b>Live Photos to stills <span class="saved">−4 GB</span></b>Drop the video half of the Live Photos you never play. The photo stays.</p>
+            <p class="cap"><b>Swipe <span class="saved">−4 GB</span></b>Left deletes, right keeps, up favorites. Heaviest first, with Undo.</p>
+            <p class="cap"><b>40 GB back in one session.</b>Empty Recently Deleted in Photos and the space shows up in iCloud.</p>
           </div>
         </div>
         <div class="actions">
@@ -348,22 +366,30 @@
     </div>
   </section>
 
-  <section class="section close">
-    <h2>Get your space back.</h2>
-    <div class="mini" aria-hidden="true">
-      <div class="bar"><i style="background:var(--pink); flex-basis:18%"></i><i style="background:var(--blue); flex-basis:18%"></i><i style="background:var(--yellow); flex-basis:4%"></i><i style="background:var(--orange); flex-basis:2%"></i><i style="background:var(--mint); flex-basis:2%"></i></div>
-    </div>
-    <div class="mini"><p class="num"><b>2.2 GB</b> of 5 GB in the example library, after one session.</p></div>
-    <div class="actions">
-      <a class="btn" href="#install"><svg class="icon"><use href="#i-down"/></svg>Get EvictLib</a>
-      <a class="btn plain" href="https://github.com/vassilidev/EvictLib">Source on GitHub</a>
+  <section class="finale" aria-labelledby="fin-h">
+    <div class="fin-in">
+      <p class="status free"><svg class="icon"><use href="#i-check"/></svg>40 GB available</p>
+      <p class="figure num">40 GB <span class="of">back.</span></p>
+      <div class="bar" aria-hidden="true">
+        <i style="background:var(--pink); flex-basis:30%"></i><i style="background:var(--blue); flex-basis:17%"></i><i style="background:var(--yellow); flex-basis:5%"></i><i style="background:var(--orange); flex-basis:1%"></i><i style="background:var(--mint); flex-basis:1%"></i><i style="background:var(--gray); flex-basis:26%"></i><i class="freed" style="flex-basis:20%">Freed</i>
+      </div>
+      <div class="foot">
+        <div class="caps">
+          <h2 id="fin-h">Get your space back.</h2>
+          <p class="fin-sub">148 GB of photos down to 108, in one session. No subscription, no quota, and nothing ever leaves your iPhone.</p>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#install"><svg class="icon"><use href="#i-down"/></svg>Get EvictLib</a>
+          <a class="btn gh" href="https://github.com/vassilidev/EvictLib"><svg class="mark" aria-hidden="true"><use href="#i-gh"/></svg>View on GitHub</a>
+        </div>
+      </div>
     </div>
   </section>
 </main>
 
 <footer>
-  <span>EvictLib · <a href="https://github.com/vassilidev/EvictLib/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/vassilidev/EvictLib">GitHub</a></span>
-  <span>iPhone and iCloud are trademarks of Apple Inc. EvictLib is not affiliated with Apple.</span>
+  <span>EvictLib, made by <a class="me" href="https://github.com/vassilidev">Vassili JOFFROY</a> · <a href="https://github.com/vassilidev">@vassilidev</a></span>
+  <span><a href="https://github.com/vassilidev/EvictLib/blob/main/LICENSE">MIT License</a> · iPhone and iCloud are trademarks of Apple Inc. EvictLib is not affiliated with Apple.</span>
 </footer>
 
 <script>
@@ -375,12 +401,12 @@
   const used = document.getElementById('used');
   const status = document.getElementById('status');
   const statusText = document.getElementById('status-text');
-  const CAP = 5; // GB, example library
-  // [videos, photos, live, bursts, screenshots] after each step
-  const K = [[2.3, 1.4, .55, .45, .3], [.9, 1.4, .55, .45, .3], [.9, 1.1, .55, .1, .3], [.9, 1.1, .2, .1, .3], [.9, .9, .2, .1, .1], [.9, .9, .2, .1, .1]];
+  const CAP = 200; // GB, example iCloud plan
+  // [videos, photos, live, bursts, screenshots, other iCloud] in GB after each step
+  const K = [[82, 38, 14, 9, 5, 52], [60, 38, 14, 9, 5, 52], [60, 35, 14, 2, 5, 52], [60, 35, 10, 2, 5, 52], [60, 34, 10, 2, 2, 52], [60, 34, 10, 2, 2, 52]];
   const FOCUS = [[], [0], [1, 3], [2], [1, 4], []];
   const ease = t => 1 - Math.pow(1 - t, 3);
-  const fmt = gb => gb >= 1 ? gb.toFixed(1) + ' GB' : Math.round(gb * 100) * 10 + ' MB';
+  const fmt = gb => Math.round(gb) + ' GB';
   const HOLD = 600, STEP = 1100; // ms, about 5 s in total
   const DRAIN = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 650; // reduced motion: values jump per step
   let last = -1, raf = 0, start = null;
@@ -389,15 +415,15 @@
     const v = K[0].slice();
     for (let i = 1; i < K.length; i++) {
       const f = ease(Math.min(1, Math.max(0, (t - (i - 1) * STEP) / DRAIN)));
-      for (let k = 0; k < 5; k++) v[k] += (K[i][k] - K[i - 1][k]) * f;
+      for (let k = 0; k < 6; k++) v[k] += (K[i][k] - K[i - 1][k]) * f;
     }
     const total = v.reduce((a, b) => a + b, 0);
     segs.forEach((el, k) => { el.style.flexBasis = (v[k] / CAP * 100) + '%'; });
     items.forEach((el, k) => { el.querySelector('b').textContent = fmt(v[k]); });
-    used.textContent = total > 4.95 ? '5' : total.toFixed(1);
+    used.textContent = Math.round(total - v[5]);
     const free = CAP - total;
-    status.classList.toggle('free', free >= .05);
-    statusText.textContent = free >= .05 ? fmt(free) + ' available' : 'iCloud Storage Full';
+    status.classList.toggle('free', free >= .5);
+    statusText.textContent = free >= .5 ? fmt(free) + ' available' : 'iCloud Storage Full';
     const step = t < 0 ? 0 : Math.min(5, Math.floor(t / STEP) + 1);
     if (step !== last) {
       last = step;

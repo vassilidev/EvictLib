@@ -2,6 +2,8 @@
 
 Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, no quota. Everything stays on your phone.
 
+Made by **Vassili JOFFROY** ([@vassilidev](https://github.com/vassilidev)).
+
 **Website:** https://vassilidev.github.io/EvictLib/
 
 <p>
