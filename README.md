@@ -1,71 +1,63 @@
 # EvictLib
 
-Free up iCloud Photos space on your iPhone. No subscription, no quota, no account, no server: everything runs on the device through PhotoKit.
+Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, no quota. Everything stays on your phone.
 
 **Website:** https://vassilidev.github.io/EvictLib/
 
 <p>
   <img src="docs/home-light.jpg" width="240" alt="Home screen: library size and recommendations">
-  <img src="docs/home-dark.jpg" width="240" alt="Home screen in dark mode">
   <img src="docs/swipe-dark.jpg" width="240" alt="Swipe sorting, largest items first">
+  <img src="docs/home-dark.jpg" width="240" alt="Home screen in dark mode">
 </p>
 
-## Features
+## What it does
 
-- **Largest Items**: your library sorted by real file size, biggest first.
-- **Similar Photos and Bursts**: near-duplicates grouped, best shot kept.
-- **Compress**: videos to HEVC, photos to HEIC, ProRAW to HEIC, slow-motion to 30 fps. Date, location, favorite, albums and EXIF are kept.
-- **Live Photos to stills**.
-- **Swipe**: left deletes, right keeps, up favorites, with Undo.
-- **History** of what was freed.
+- **Largest Items**: your photos and videos sorted by size, biggest first.
+- **Similar Photos and Bursts**: duplicates grouped, the best shot kept.
+- **Compress**: makes heavy videos and photos smaller, keeping date, location and albums.
+- **Live Photos to stills**: keeps the photo, drops the video part.
+- **Swipe**: left to delete, right to keep, up to favorite.
 
-Deleted items go to *Recently Deleted* for 30 days, and iOS asks for confirmation on every delete. Favorites and album items are protected by default.
+Nothing is deleted without the iPhone asking you first, and deleted items stay 30 days in *Recently Deleted*.
 
-Requires iOS 17 or later and full Photos access.
+## Install it on your iPhone
 
-## Install on any iPhone
+EvictLib is not on the App Store. You install it once from a computer.
 
-EvictLib is not on the App Store. Pick one of the two ways below.
+**Why a computer?** The app comes as a file called `EvictLib.ipa`. An iPhone can't open that file by itself. A free app called **Sideloadly** signs it with your Apple ID and puts it on your iPhone through the cable.
 
-> With a free Apple ID, Apple limits sideloaded apps to **7 days** (then re-sign or re-run to keep using it) and **3 apps** at a time. A paid Apple Developer account lifts this to one year.
+**You need:** an iPhone with iOS 17 or later, a Mac or Windows PC, a USB cable, and an Apple ID (the one you already use is fine).
 
-### Option A: download the app (Windows or Mac, no Xcode)
+### On your computer
 
-1. Download [`EvictLib.ipa`](https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa) from the [latest release](https://github.com/vassilidev/EvictLib/releases/latest).
-2. Install [Sideloadly](https://sideloadly.io) on your computer (or use [AltStore](https://altstore.io) / [SideStore](https://sidestore.io)).
-3. Plug in your iPhone, drag `EvictLib.ipa` into Sideloadly, enter your Apple ID, click **Start**.
-4. On the iPhone, follow the steps in [First launch](#first-launch).
+1. **Download the app:** [EvictLib.ipa](https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa).
+2. **Install Sideloadly** from [sideloadly.io](https://sideloadly.io). On Windows, also install iTunes from apple.com, as Sideloadly's site explains.
+3. **Plug in your iPhone**, unlock it, and tap **Trust** if it asks.
+4. **Open Sideloadly**, drag `EvictLib.ipa` into it, type your Apple ID email, and click **Start**. Sign in when it asks.
 
-### Option B: build from source (Mac with Xcode)
+### On your iPhone
 
-1. Install [Xcode](https://apps.apple.com/app/xcode/id497799835) 16 or later. Your Xcode must support your iPhone's iOS version.
-2. Clone and open the project:
-   ```sh
-   git clone https://github.com/vassilidev/EvictLib.git
-   open EvictLib/EvictLib.xcodeproj
-   ```
-3. In Xcode, add your Apple ID under **Settings › Accounts**.
-4. Select the **EvictLib** target › **Signing & Capabilities**:
-   - **Team**: your Apple ID (Personal Team).
-   - **Bundle Identifier**: change it to something unique, e.g. `com.yourname.evictlib`.
-5. Plug in your iPhone, select it as the run destination, press **⌘R**.
-6. On the iPhone, follow the steps in [First launch](#first-launch).
+5. **Turn on Developer Mode:** Settings › Privacy & Security › Developer Mode › On. The iPhone restarts; tap **Turn On**.
+6. **Trust your Apple ID:** Settings › General › VPN & Device Management › your Apple ID › **Trust**.
+7. **Open EvictLib** and allow **Full Access** to Photos.
 
-### First launch
+Done. To get the space back in iCloud, empty *Recently Deleted* in the Photos app.
 
-1. **Developer Mode** (iOS 16+): Settings › Privacy & Security › Developer Mode › On, then restart.
-2. **Trust the developer**: Settings › General › VPN & Device Management › your Apple ID › Trust.
-3. Open EvictLib and allow **Full Access** to Photos.
+### Every 7 days
 
-To get the space back in iCloud, empty *Recently Deleted* in Photos once you are done.
+With a free Apple ID, Apple makes the app stop opening after 7 days. Plug in your iPhone and click **Start** again in Sideloadly to renew it. Your photos are never affected.
 
-## Development
+## For developers
+
+Build and run with Xcode 16 or later: open `EvictLib.xcodeproj`, set your team and a unique bundle identifier in **Signing & Capabilities**, pick your iPhone, press **⌘R**.
+
+Run the tests:
 
 ```sh
 xcodebuild test -scheme EvictLib -destination 'platform=iOS Simulator,name=iPhone 17 Pro'
 ```
 
-Build the unsigned IPA attached to releases:
+Build the unsigned `EvictLib.ipa` published in releases:
 
 ```sh
 xcodebuild archive -scheme EvictLib -configuration Release -destination 'generic/platform=iOS' \

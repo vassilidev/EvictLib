@@ -2,135 +2,424 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>EvictLib</title>
-<meta name="description" content="Free up iCloud Photos space on your iPhone. No subscription, no quota, everything on device.">
+<meta name="description" content="Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, no quota, nothing leaves your phone.">
+<meta property="og:title" content="EvictLib">
+<meta property="og:description" content="Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, nothing leaves your phone.">
+<meta property="og:image" content="https://vassilidev.github.io/EvictLib/icon.png">
+<meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icon.png">
 <link rel="apple-touch-icon" href="icon.png">
+<script>document.documentElement.classList.add('js')</script>
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #F2F2F7; --surface: #FFFFFF; --label: #000000; --secondary: #3C3C4399;
-    --separator: #3C3C4349; --accent: #007AFF; --red: #FF3B30; --green: #34C759;
-    --pink: #FF2D55; --indigo: #5856D6; --orange: #FF9500; --teal: #30B0C7;
+    --bg: #F2F2F7; --surface: #FFFFFF; --label: #000000; --label-2: #6C6C70; --label-3: #AEAEB2; --label-dim: #8A8A8E;
+    --sep: rgba(60, 60, 67, .18); --track: #E3E3E8; --fill: rgba(118, 118, 128, .12); --seg-on: #FFFFFF;
+    --blue: #007AFF; --red: #FF3B30; --green: #248A3D; --pink: #FF2D55; --yellow: #FFCC00; --orange: #FF9500; --mint: #34C759;
+    --band: #000000;
+    --nav: rgba(242, 242, 247, .78);
+    --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", system-ui, "Segoe UI", Roboto, sans-serif;
+    --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+    --ease: cubic-bezier(.16, 1, .3, 1);
+    --gutter: clamp(16px, 4.4vw, 64px);
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #000000; --surface: #1C1C1E; --label: #FFFFFF; --secondary: #EBEBF599;
-      --separator: #54545899; --accent: #0A84FF; --red: #FF453A; --green: #30D158;
-      --pink: #FF375F; --indigo: #5E5CE6; --orange: #FF9F0A; --teal: #40C8E0;
+      --bg: #000000; --surface: #1C1C1E; --label: #FFFFFF; --label-2: #AEAEB2; --label-3: #636366; --label-dim: #6E6E73;
+      --sep: rgba(84, 84, 88, .55); --track: #1C1C1E; --fill: rgba(118, 118, 128, .24); --seg-on: #636366;
+      --blue: #0A84FF; --red: #FF453A; --green: #30D158; --pink: #FF375F; --yellow: #FFD60A; --orange: #FF9F0A; --mint: #30D158;
+      --band: #161617;
+      --nav: rgba(0, 0, 0, .72);
     }
   }
+
   * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; scroll-padding-top: 64px; scrollbar-color: var(--label-3) transparent; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
   body {
-    margin: 0; background: var(--bg); color: var(--label);
-    font: 17px/1.45 -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
-    -webkit-font-smoothing: antialiased;
+    margin: 0; background: var(--bg); color: var(--label); font: 17px/1.47 var(--font);
+    -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; caret-color: var(--blue); accent-color: var(--blue);
   }
-  main { max-width: 760px; margin: 0 auto; padding: 56px 16px 40px; }
-  a { color: var(--accent); text-decoration: none; }
-  a:hover { text-decoration: underline; }
+  ::selection { background: color-mix(in srgb, var(--blue) 28%, transparent); }
+  a { color: var(--blue); text-decoration: none; }
+  a:hover { text-decoration: underline; text-underline-offset: 3px; text-decoration-thickness: 1px; }
+  :focus-visible { outline: 3px solid color-mix(in srgb, var(--blue) 70%, transparent); outline-offset: 3px; border-radius: 6px; }
+  h1, h2, h3, p { margin: 0; }
+  h2 { font-size: clamp(2.5rem, 5.6vw, 5rem); line-height: 1.02; letter-spacing: -.035em; font-weight: 700; text-wrap: balance; }
+  .lede { font-size: clamp(1.1875rem, 1.6vw, 1.5rem); line-height: 1.38; color: var(--label-2); font-weight: 500; max-width: 34ch; text-wrap: pretty; }
+  .icon { width: 1em; height: 1em; flex: none; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .num { font-variant-numeric: tabular-nums; }
 
-  header { text-align: center; }
-  header img { width: 112px; height: 112px; border-radius: 25px; box-shadow: 0 8px 24px rgb(0 0 0 / .15); }
-  h1 { font-size: 40px; line-height: 1.1; letter-spacing: -.02em; margin: 20px 0 8px; }
-  .tagline { font-size: 21px; color: var(--secondary); margin: 0 auto; max-width: 30ch; }
-  .actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin: 28px 0 8px; }
+  /* Buttons */
   .btn {
-    display: inline-flex; align-items: center; min-height: 50px; padding: 0 24px; border-radius: 999px;
-    font-weight: 600; background: var(--surface); color: var(--accent);
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 26px;
+    border-radius: 999px; font: 600 17px/1 var(--font); white-space: nowrap; background: var(--blue); color: #fff;
+    transition: transform .2s var(--ease), background-color .2s;
   }
-  .btn.primary { background: var(--accent); color: #fff; }
-  .btn:hover { text-decoration: none; opacity: .85; }
-  .note { font-size: 13px; color: var(--secondary); text-align: center; margin: 0; }
+  .btn:hover { text-decoration: none; background: color-mix(in srgb, var(--blue) 86%, #000); }
+  .btn:active { transform: scale(.97); }
+  .btn.plain { background: var(--fill); color: var(--blue); }
+  .btn.plain:hover { background: color-mix(in srgb, var(--fill) 100%, var(--blue) 10%); }
+  .btn .icon { font-size: 20px; }
 
-  .shots {
-    display: flex; gap: 16px; justify-content: center; margin: 48px -16px 0; padding: 0 16px 8px;
-    overflow-x: auto; scroll-snap-type: x mandatory;
+  /* Nav */
+  .nav {
+    position: fixed; inset: 0 0 auto; z-index: 10; height: 52px; padding: 0 var(--gutter);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--nav); -webkit-backdrop-filter: saturate(180%) blur(20px); backdrop-filter: saturate(180%) blur(20px);
+    border-bottom: .5px solid var(--sep);
   }
-  .shots img {
-    width: 220px; height: auto; flex: none; border-radius: 28px; scroll-snap-align: center;
-    border: 1px solid var(--separator);
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 700; font-size: 19px; color: var(--label); letter-spacing: -.01em; }
+  .brand:hover { text-decoration: none; }
+  .brand img { width: 30px; height: 30px; border-radius: 7px; }
+  .nav nav { display: flex; align-items: center; gap: clamp(16px, 2.4vw, 32px); font-size: 15px; }
+  .nav nav a:not(.btn) { color: var(--label-2); }
+  .nav nav a:not(.btn):hover { color: var(--label); text-decoration: none; }
+  .nav .btn { min-height: 34px; padding: 0 16px; font-size: 15px; }
+  @media (max-width: 640px) { .nav .hide-s { display: none; } }
+
+  /* Stage: the storage meter */
+  .stage { position: relative; }
+  .pin {
+    padding: calc(52px + clamp(28px, 6svh, 64px)) var(--gutter) clamp(24px, 5svh, 48px);
+    display: flex; flex-direction: column;
   }
-  @media (max-width: 720px) { .shots { justify-content: flex-start; } }
-
-  h2 { font-size: 22px; margin: 56px 0 12px; padding-left: 4px; }
-  .group { background: var(--surface); border-radius: 14px; overflow: hidden; margin: 0; padding: 0; list-style: none; }
-  .group li { display: flex; gap: 14px; align-items: flex-start; padding: 12px 16px; position: relative; }
-  .group li + li::before { content: ""; position: absolute; top: 0; left: 62px; right: 0; border-top: .5px solid var(--separator); }
-  .glyph {
-    flex: none; width: 32px; height: 32px; border-radius: 8px; color: #fff;
-    display: grid; place-items: center; font-size: 15px; font-weight: 700;
+  .status { display: flex; align-items: center; gap: 8px; font-size: clamp(1.0625rem, 1.4vw, 1.25rem); font-weight: 600; color: var(--red); transition: color .4s; }
+  .status .icon { font-size: 1.1em; }
+  .status .ok { display: none; }
+  .status.free { color: var(--green); }
+  .status.free .full { display: none; }
+  .status.free .ok { display: block; }
+  .figure {
+    margin-top: clamp(4px, 1svh, 12px); font-weight: 800; letter-spacing: -.04em; line-height: .92;
+    font-size: clamp(4rem, min(13.5vw, 22svh), 12.5rem); white-space: nowrap;
   }
-  .group b { font-weight: 600; display: block; }
-  .group span.d { color: var(--secondary); font-size: 15px; }
+  .figure .of { color: var(--label-dim); }
+  .bar {
+    margin-top: clamp(20px, 4svh, 36px); height: clamp(56px, 12.5svh, 120px); display: flex; gap: 4px; padding: 4px;
+    background: var(--track); border-radius: clamp(16px, 2.6svh, 28px); overflow: hidden;
+  }
+  .bar i { --r: clamp(12px, 2.1svh, 24px); display: block; flex: 0 1 auto; min-width: 0; border-radius: 6px; }
+  .bar i:first-child { border-radius: var(--r) 6px 6px var(--r); }
+  .bar i:last-child { border-radius: 6px var(--r) var(--r) 6px; }
+  .legend { margin: clamp(14px, 2.6svh, 24px) 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px clamp(20px, 3vw, 44px); font-size: clamp(.9375rem, 1.3vw, 1.1875rem); }
+  .legend li { display: flex; align-items: center; gap: 8px; transition: opacity .35s var(--ease); }
+  .legend .dot { width: 11px; height: 11px; border-radius: 50%; flex: none; }
+  .legend b { font-weight: 600; white-space: nowrap; }
+  .legend .note { color: var(--label-2); }
+  .stage[data-step] .legend li.dim { opacity: .3; }
 
-  ol.steps { background: var(--surface); border-radius: 14px; margin: 0; padding: 16px 20px 16px 40px; }
-  ol.steps li { margin: 6px 0; }
-  h3 { font-size: 17px; margin: 28px 0 8px; padding-left: 4px; }
-  code { font: 15px ui-monospace, "SF Mono", Menlo, monospace; overflow-wrap: anywhere; }
-  .callout { font-size: 15px; color: var(--secondary); padding: 0 4px; margin: 12px 0 0; }
+  .foot { margin-top: clamp(40px, 8svh, 88px); display: flex; align-items: flex-end; justify-content: space-between; gap: 32px; }
+  .caps { flex: 1; max-width: 680px; }
+  .caps h1 { font-size: clamp(1.75rem, 3vw, 2.75rem); line-height: 1.08; letter-spacing: -.03em; font-weight: 700; text-wrap: balance; }
+  .ticker { position: relative; margin-top: 12px; }
+  .cap { margin: 0; font-size: clamp(1rem, 1.35vw, 1.1875rem); line-height: 1.45; color: var(--label-2); max-width: 50ch; text-wrap: pretty; }
+  .cap + .cap { margin-top: 14px; }
+  .cap b { display: block; color: var(--label); font-weight: 600; }
+  .cap .saved { color: var(--green); white-space: nowrap; margin-left: 4px; }
+  .js .ticker { min-height: 4.5em; }
+  .js .cap { position: absolute; inset: 0 0 auto 0; margin: 0; opacity: 0; transform: translateY(10px); filter: blur(4px); pointer-events: none; transition: opacity .4s var(--ease), transform .55s var(--ease), filter .4s var(--ease); }
+  .js .cap.on { opacity: 1; transform: none; filter: none; pointer-events: auto; }
+  .legend .replay-li { margin-left: auto; }
+  .replay { display: none; align-items: center; gap: 6px; padding: 6px 2px; border: 0; background: none; font: 600 15px/1 var(--font); color: var(--blue); cursor: pointer; }
+  .js .replay { display: inline-flex; }
+  .replay:hover { text-decoration: underline; text-underline-offset: 3px; }
+  .replay .icon { font-size: 17px; }
+  .actions { display: flex; gap: 12px; flex: none; }
+  @media (prefers-reduced-motion: reduce) { .js .cap { transform: none; filter: none; transition: opacity .2s; } }
+  @media (max-width: 760px) {
+    .figure .of { display: block; font-size: .56em; letter-spacing: -.03em; margin-top: .12em; }
+    .legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; font-size: 14px; }
+    .legend .note { grid-column: 1 / -1; font-size: 13px; }
+    .foot { flex-direction: column; align-items: stretch; gap: 18px; }
+    .js .ticker { min-height: 6.6em; }
+    .legend .replay-li { margin-left: 0; grid-column: 1 / -1; }
+    .foot .actions .plain { display: none; }
+    .foot .actions .btn { flex: 1; }
+  }
 
-  footer { text-align: center; font-size: 13px; color: var(--secondary); margin-top: 56px; }
+  /* Band: the app */
+  .band { background: var(--band); color: #F5F5F7; padding: clamp(80px, 12vw, 160px) 0 clamp(72px, 10vw, 140px); overflow: hidden; }
+  .band .head { padding: 0 var(--gutter); text-align: center; }
+  .band h2 { max-width: 14ch; margin: 0 auto; }
+  .band .lede { color: #A1A1A6; margin: 20px auto 0; }
+  .phones {
+    display: flex; justify-content: center; align-items: flex-start; gap: clamp(24px, 4vw, 64px);
+    margin-top: clamp(56px, 7vw, 96px); padding: 24px var(--gutter) 8px;
+  }
+  .phone { flex: none; margin: 0; width: clamp(220px, 21vw, 300px); text-align: center; }
+  .phone img {
+    display: block; width: 100%; height: auto; border-radius: 13.5% / 6.2%;
+    box-shadow: 0 0 0 10px #1D1D1F, 0 0 0 11px #3A3A3C, 0 40px 80px -20px rgba(0, 0, 0, .8);
+  }
+  .phone.lift { margin-top: -40px; width: clamp(240px, 23vw, 330px); }
+  .phone p { margin: 30px auto 0; font-size: 15px; line-height: 1.45; color: #A1A1A6; max-width: 26ch; }
+  .phone p b { display: block; color: #F5F5F7; font-size: 17px; font-weight: 600; margin-bottom: 2px; }
+  @media (max-width: 900px) {
+    .phones { justify-content: flex-start; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-top: 40px; padding-bottom: 24px; }
+    .phones::-webkit-scrollbar { display: none; }
+    .phone, .phone.lift { width: 240px; margin-top: 0; scroll-snap-align: center; }
+  }
+
+  /* Sections */
+  .section { padding: clamp(88px, 12vw, 168px) var(--gutter); max-width: 1440px; margin: 0 auto; }
+  .split { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 6fr); gap: clamp(40px, 6vw, 112px); align-items: start; }
+  .split.hold > :first-child { position: sticky; top: 112px; }
+  .split .lede { margin-top: 22px; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } .split.hold > :first-child { position: static; } }
+
+  .group { margin: 0; padding: 0; list-style: none; background: var(--surface); border-radius: 22px; overflow: hidden; }
+  .group > li { position: relative; display: flex; gap: 18px; align-items: flex-start; padding: 22px 24px; }
+  .group > li + li::before { content: ""; position: absolute; top: 0; right: 0; left: 70px; border-top: .5px solid var(--sep); }
+  .group .lead { flex: none; width: 28px; height: 28px; display: grid; place-items: center; margin-top: 1px; }
+  .group .lead .icon { font-size: 26px; stroke-width: 1.8; }
+  .group b { display: block; font-weight: 600; font-size: 19px; letter-spacing: -.01em; }
+  .group span.d { display: block; margin-top: 3px; color: var(--label-2); font-size: 16px; line-height: 1.45; }
+  .group .step { flex: none; width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: #fff; font: 600 15px/28px var(--font); text-align: center; }
+  .group code { font: 14px/1.5 var(--mono); background: var(--fill); padding: 2px 6px; border-radius: 6px; overflow-wrap: anywhere; }
+  .group .btn { margin-top: 14px; }
+
+  /* Install */
+  .install h3 { font-size: 22px; letter-spacing: -.015em; margin: 0 0 14px 4px; }
+  .seg { position: relative; display: inline-grid; grid-auto-flow: column; grid-auto-columns: 1fr; padding: 2px; margin: 34px 0 18px; border-radius: 10px; background: var(--fill); }
+  .seg input { position: absolute; opacity: 0; pointer-events: none; }
+  .seg label { min-height: 36px; padding: 0 20px; display: grid; place-items: center; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; transition: background-color .2s, box-shadow .2s; }
+  .seg input:checked + label { background: var(--seg-on); font-weight: 600; box-shadow: 0 3px 8px rgba(0, 0, 0, .12), 0 3px 1px rgba(0, 0, 0, .04); }
+  .seg input:focus-visible + label { outline: 3px solid color-mix(in srgb, var(--blue) 70%, transparent); outline-offset: 1px; }
+  .install:has(#p-xcode:checked) #panel-side, .install:not(:has(#p-xcode:checked)) #panel-xcode { display: none; }
+  .explain { margin-top: 18px; font-size: 17px; line-height: 1.5; max-width: 52ch; text-wrap: pretty; }
+  .explain.need { color: var(--label-2); font-size: 16px; margin-top: 10px; }
+  .fine b { color: var(--label); font-weight: 600; }
+  @media (max-width: 640px) { .seg { display: grid; width: 100%; } }
+  .fine { margin: 18px 4px 0; font-size: 15px; line-height: 1.5; color: var(--label-2); max-width: 60ch; }
+  .later { padding-top: clamp(0px, 14vw, 212px); }
+  @media (max-width: 900px) { .later { padding-top: 24px; } }
+
+  /* Close */
+  .close { text-align: center; padding-bottom: clamp(64px, 8vw, 112px); }
+  .close h2 { max-width: 12ch; margin: 0 auto; }
+  .mini { max-width: 760px; margin: 48px auto 0; }
+  .mini .bar { height: 44px; border-radius: 16px; margin: 0; }
+  .mini .bar i { border-radius: 12px; }
+  .mini p { margin-top: 14px; font-size: 17px; color: var(--label-2); }
+  .mini p b { color: var(--label); }
+  .close .actions { justify-content: center; margin-top: 40px; flex-wrap: wrap; }
+  footer { padding: 28px var(--gutter) 40px; border-top: .5px solid var(--sep); font-size: 13px; color: var(--label-2); display: flex; flex-wrap: wrap; gap: 8px 24px; justify-content: space-between; }
+  footer a { color: var(--label-2); }
+  footer a:hover { color: var(--label); }
 </style>
 </head>
 <body>
-<main>
-  <header>
-    <img src="icon.png" alt="EvictLib app icon">
-    <h1>EvictLib</h1>
-    <p class="tagline">Free up iCloud Photos space. No subscription, no quota.</p>
-    <div class="actions">
-      <a class="btn primary" href="https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa">Download for iPhone</a>
-      <a class="btn" href="https://github.com/vassilidev/EvictLib">Source on GitHub</a>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7.5v5.5"/><path d="M12 16.5h.01" stroke-width="2.6"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.7 2.7L16 9.8"/></symbol>
+  <symbol id="i-down" viewBox="0 0 24 24"><path d="M12 4v11M7 10.5l5 5 5-5M5 20h14"/></symbol>
+  <symbol id="i-replay" viewBox="0 0 24 24"><path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3"/><path d="M4.5 4.5v4h4"/></symbol>
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M6 9.5l6 6 6-6"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 20s-7.5-4.6-7.5-10.4A4.1 4.1 0 0 1 12 7.3a4.1 4.1 0 0 1 7.5 2.3C19.5 15.4 12 20 12 20z"/></symbol>
+  <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l7 2.8v5.4c0 4.4-2.9 8-7 9.8-4.1-1.8-7-5.4-7-9.8V5.8z"/><path d="M9 12l2.2 2.2L15.2 10"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M9.5 7V4.5h5V7M6.5 7l.9 12.5h9.2L17.5 7M10.5 11v5M13.5 11v5"/></symbol>
+  <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6.5" y="2.5" width="11" height="19" rx="2.6"/><path d="M10.5 18.5h3"/></symbol>
+  <symbol id="i-pin" viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11.2a6.5 6.5 0 0 1 13 0C18.5 15.4 12 21 12 21z"/><circle cx="12" cy="9.8" r="2.3"/></symbol>
+</svg>
+
+<header class="nav">
+  <a class="brand" href="#top" aria-label="EvictLib home"><img src="icon.png" alt="" width="30" height="30">EvictLib</a>
+  <nav aria-label="Main">
+    <a class="hide-s" href="#app">The app</a>
+    <a class="hide-s" href="#safety">Safety</a>
+    <a class="hide-s" href="https://github.com/vassilidev/EvictLib">GitHub</a>
+    <a class="btn" href="#install">Get EvictLib</a>
+  </nav>
+</header>
+
+<main id="top">
+  <section class="stage" id="stage" aria-label="How EvictLib frees space">
+    <div class="pin">
+      <p class="status" id="status">
+        <svg class="icon full"><use href="#i-alert"/></svg><svg class="icon ok"><use href="#i-check"/></svg>
+        <span id="status-text">iCloud Storage Full</span>
+      </p>
+      <p class="figure num"><span id="used">5</span> GB <span class="of">of 5 GB</span></p>
+      <div class="bar" id="bar" aria-hidden="true">
+        <i style="background:var(--pink); flex-basis:46%"></i><i style="background:var(--blue); flex-basis:28%"></i><i style="background:var(--yellow); flex-basis:11%"></i><i style="background:var(--orange); flex-basis:9%"></i><i style="background:var(--mint); flex-basis:6%"></i>
+      </div>
+      <ul class="legend num" id="legend">
+        <li><span class="dot" style="background:var(--pink)"></span>Videos <b>2.3 GB</b></li>
+        <li><span class="dot" style="background:var(--blue)"></span>Photos <b>1.4 GB</b></li>
+        <li><span class="dot" style="background:var(--yellow)"></span>Live Photos <b>550 MB</b></li>
+        <li><span class="dot" style="background:var(--orange)"></span>Bursts <b>450 MB</b></li>
+        <li><span class="dot" style="background:var(--mint)"></span>Screenshots <b>300 MB</b></li>
+        <li class="note">Example library</li>
+        <li class="replay-li"><button class="replay" id="replay" type="button"><svg class="icon"><use href="#i-replay"/></svg>Replay</button></li>
+      </ul>
+      <div class="foot">
+        <div class="caps">
+          <h1>Free up your iCloud Photos.</h1>
+          <div class="ticker" id="caps" aria-live="polite">
+            <p class="cap on"><b>Biggest items first.</b>No subscription, no quota, and nothing ever leaves your iPhone.</p>
+            <p class="cap"><b>Largest Items and Compress <span class="saved">−1.4 GB</span></b>Your library sorted by real file size. Heavy videos shrink to HEVC, photos to HEIC.</p>
+            <p class="cap"><b>Similar Photos and Bursts <span class="saved">−650 MB</span></b>Near-duplicates grouped, the best shot kept, the rest selected for you.</p>
+            <p class="cap"><b>Live Photos to stills <span class="saved">−350 MB</span></b>Drop the video half of the Live Photos you never play. The photo stays.</p>
+            <p class="cap"><b>Swipe <span class="saved">−400 MB</span></b>Left deletes, right keeps, up favorites. Heaviest first, with Undo.</p>
+            <p class="cap"><b>2.8 GB back in one session.</b>Empty Recently Deleted in Photos and the space shows up in iCloud.</p>
+          </div>
+        </div>
+        <div class="actions">
+          <a class="btn" href="#install"><svg class="icon"><use href="#i-down"/></svg>Get EvictLib</a>
+          <a class="btn plain" href="#app">See the app</a>
+        </div>
+      </div>
     </div>
-    <p class="note">iOS 17 or later. Free and open source. Not on the App Store, see <a href="#install">how to install</a>.</p>
-  </header>
+  </section>
 
-  <div class="shots">
-    <img src="home-light.jpg" alt="Home screen showing library size and recommendations" loading="lazy">
-    <img src="swipe-dark.jpg" alt="Swipe sorting showing a 25.7 MB video" loading="lazy">
-    <img src="home-dark.jpg" alt="Home screen in dark mode" loading="lazy">
-  </div>
+  <section class="band" id="app">
+    <div class="head">
+      <h2>Feels like it came with your iPhone.</h2>
+      <p class="lede">Native iOS, in light and dark, working straight on the Photos library you already have.</p>
+    </div>
+    <div class="phones">
+      <figure class="phone">
+        <img src="home-light.jpg" alt="EvictLib home: library size by type, then Largest Items, Similar Photos and Compress with their savings" width="720" height="1566" loading="lazy">
+        <p><b>Clean</b>Every recommendation shows what it frees before you tap.</p>
+      </figure>
+      <figure class="phone lift">
+        <img src="swipe-dark.jpg" alt="Swipe screen: a 25.7 MB video with delete, undo, favorite and keep buttons" width="720" height="1566" loading="lazy">
+        <p><b>Swipe</b>Size up top, videos play right in the card.</p>
+      </figure>
+      <figure class="phone">
+        <img src="home-dark.jpg" alt="EvictLib home screen in Dark Mode" width="720" height="1566" loading="lazy">
+        <p><b>Dark Mode</b>Follows your iPhone, like every system app.</p>
+      </figure>
+    </div>
+  </section>
 
-  <h2>Biggest wins first</h2>
-  <ul class="group">
-    <li><span class="glyph" style="background:var(--accent)">↓</span><div><b>Largest Items</b><span class="d">Your library sorted by real file size.</span></div></li>
-    <li><span class="glyph" style="background:var(--indigo)">≈</span><div><b>Similar Photos and Bursts</b><span class="d">Near-duplicates grouped, the best shot kept.</span></div></li>
-    <li><span class="glyph" style="background:var(--teal)">⇲</span><div><b>Compress</b><span class="d">HEVC video, HEIC photo, ProRAW to HEIC, slow-motion to 30 fps. Date, location, albums and EXIF kept.</span></div></li>
-    <li><span class="glyph" style="background:var(--orange)">◎</span><div><b>Live Photos to stills</b><span class="d">Drop the video part, keep the photo.</span></div></li>
-    <li><span class="glyph" style="background:var(--pink)">♥</span><div><b>Swipe</b><span class="d">Left deletes, right keeps, up favorites. Undo anytime.</span></div></li>
-    <li><span class="glyph" style="background:var(--green)">✓</span><div><b>Never lose a memory</b><span class="d">Favorites and album items protected. Deletions go to Recently Deleted for 30 days.</span></div></li>
-  </ul>
-  <p class="callout">Everything runs on your iPhone. No account, no server, no upload.</p>
+  <section class="section" id="safety">
+    <div class="split hold">
+      <div>
+        <h2>Never lose a memory.</h2>
+        <p class="lede">Deleting is the easy part. EvictLib is built so you never regret it.</p>
+      </div>
+      <ul class="group">
+        <li><span class="lead" style="color:var(--pink)"><svg class="icon"><use href="#i-heart"/></svg></span><div><b>Favorites and albums are protected</b><span class="d">Items you love or filed in an album stay out of every suggestion by default.</span></div></li>
+        <li><span class="lead" style="color:var(--blue)"><svg class="icon"><use href="#i-shield"/></svg></span><div><b>iOS confirms every deletion</b><span class="d">Nothing disappears without the system dialog you already know.</span></div></li>
+        <li><span class="lead" style="color:var(--orange)"><svg class="icon"><use href="#i-trash"/></svg></span><div><b>30 days to change your mind</b><span class="d">Deleted items wait in Recently Deleted, in the Photos app.</span></div></li>
+        <li><span class="lead" style="color:var(--green)"><svg class="icon"><use href="#i-pin"/></svg></span><div><b>Compressed, not stripped</b><span class="d">Date, location, favorite, albums and EXIF carry over to the smaller file.</span></div></li>
+        <li><span class="lead" style="color:var(--label-2)"><svg class="icon"><use href="#i-phone"/></svg></span><div><b>Nothing leaves your iPhone</b><span class="d">No account, no server, no upload. Free and open source, so you can check.</span></div></li>
+      </ul>
+    </div>
+  </section>
 
-  <h2 id="install">Install</h2>
-  <p class="callout" style="margin:0 0 4px">With a free Apple ID, Apple limits sideloaded apps to 7 days (re-sign to keep using it) and 3 apps at a time.</p>
+  <section class="section install" id="install">
+    <div class="split">
+      <div>
+        <h2>Get EvictLib.</h2>
+        <p class="lede">Free and open source, not on the App Store yet. You install it once, from a computer.</p>
+        <p class="explain"><b>Why a computer?</b> The app comes as a file, <b>EvictLib.ipa</b>, and an iPhone can’t open it by itself. <a href="https://sideloadly.io">Sideloadly</a>, a free app for Mac and Windows, signs it with your Apple ID and puts it on your iPhone through the cable.</p>
+        <p class="explain need">You need an iPhone on iOS 17 or later, a Mac or Windows PC, a USB cable and your Apple ID.</p>
+        <div class="seg" role="radiogroup" aria-label="How to install">
+          <input type="radio" name="path" id="p-side" checked><label for="p-side">Mac or Windows</label>
+          <input type="radio" name="path" id="p-xcode"><label for="p-xcode">With Xcode</label>
+        </div>
+        <ol class="group" id="panel-side">
+          <li><span class="step">1</span><div><b>Download the app</b><span class="d">One file, about 1.5 MB.</span><a class="btn" href="https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa"><svg class="icon"><use href="#i-down"/></svg>EvictLib.ipa</a></div></li>
+          <li><span class="step">2</span><div><b>Install Sideloadly</b><span class="d">Free, from <a href="https://sideloadly.io">sideloadly.io</a>. On Windows, also install iTunes from apple.com.</span></div></li>
+          <li><span class="step">3</span><div><b>Plug in your iPhone</b><span class="d">Unlock it and tap Trust if it asks.</span></div></li>
+          <li><span class="step">4</span><div><b>Drop the file and click Start</b><span class="d">Drag EvictLib.ipa into Sideloadly, type your Apple ID email, click Start and sign in when asked.</span></div></li>
+        </ol>
+        <ol class="group" id="panel-xcode">
+          <li><span class="step">1</span><div><b>Clone and open</b><span class="d"><code>git clone https://github.com/vassilidev/EvictLib.git</code> then open <code>EvictLib.xcodeproj</code>.</span></div></li>
+          <li><span class="step">2</span><div><b>Sign with your Apple ID</b><span class="d">Target EvictLib › Signing &amp; Capabilities: pick your team and set a unique bundle identifier.</span></div></li>
+          <li><span class="step">3</span><div><b>Run on your iPhone</b><span class="d">Select it as the destination and press ⌘R.</span></div></li>
+        </ol>
+      </div>
+      <div class="later">
+        <h3>Then, on your iPhone</h3>
+        <ol class="group">
+          <li><span class="step">1</span><div><b>Turn on Developer Mode</b><span class="d">Settings › Privacy &amp; Security › Developer Mode. The iPhone restarts; tap Turn On.</span></div></li>
+          <li><span class="step">2</span><div><b>Trust your Apple ID</b><span class="d">Settings › General › VPN &amp; Device Management › your Apple ID › Trust.</span></div></li>
+          <li><span class="step">3</span><div><b>Open EvictLib</b><span class="d">Allow Full Access to Photos, then start with Largest Items.</span></div></li>
+        </ol>
+        <p class="fine"><b>Every 7 days:</b> with a free Apple ID, Apple makes the app stop opening after a week. Plug in and click Start again in Sideloadly to renew it. Your photos are never affected.</p>
+      </div>
+    </div>
+  </section>
 
-  <h3>Without a Mac (Windows or Mac)</h3>
-  <ol class="steps">
-    <li>Download <a href="https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa"><code>EvictLib.ipa</code></a>.</li>
-    <li>Install <a href="https://sideloadly.io">Sideloadly</a> (or <a href="https://altstore.io">AltStore</a>).</li>
-    <li>Plug in your iPhone, drop the IPA into Sideloadly, enter your Apple ID, click <b>Start</b>.</li>
-  </ol>
-
-  <h3>With Xcode</h3>
-  <ol class="steps">
-    <li><code>git clone https://github.com/vassilidev/EvictLib.git</code> and open <code>EvictLib.xcodeproj</code>.</li>
-    <li>Target <b>EvictLib</b> › Signing &amp; Capabilities: pick your team, set a unique bundle identifier.</li>
-    <li>Plug in your iPhone, select it, press <b>⌘R</b>.</li>
-  </ol>
-
-  <h3>Then, on the iPhone</h3>
-  <ol class="steps">
-    <li>Settings › Privacy &amp; Security › <b>Developer Mode</b> › On, then restart.</li>
-    <li>Settings › General › VPN &amp; Device Management › your Apple ID › <b>Trust</b>.</li>
-    <li>Open EvictLib and allow <b>Full Access</b> to Photos.</li>
-  </ol>
-
-  <footer>
-    <a href="https://github.com/vassilidev/EvictLib/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/vassilidev/EvictLib">GitHub</a>
-  </footer>
+  <section class="section close">
+    <h2>Get your space back.</h2>
+    <div class="mini" aria-hidden="true">
+      <div class="bar"><i style="background:var(--pink); flex-basis:18%"></i><i style="background:var(--blue); flex-basis:18%"></i><i style="background:var(--yellow); flex-basis:4%"></i><i style="background:var(--orange); flex-basis:2%"></i><i style="background:var(--mint); flex-basis:2%"></i></div>
+    </div>
+    <div class="mini"><p class="num"><b>2.2 GB</b> of 5 GB in the example library, after one session.</p></div>
+    <div class="actions">
+      <a class="btn" href="#install"><svg class="icon"><use href="#i-down"/></svg>Get EvictLib</a>
+      <a class="btn plain" href="https://github.com/vassilidev/EvictLib">Source on GitHub</a>
+    </div>
+  </section>
 </main>
+
+<footer>
+  <span>EvictLib · <a href="https://github.com/vassilidev/EvictLib/blob/main/LICENSE">MIT License</a> · <a href="https://github.com/vassilidev/EvictLib">GitHub</a></span>
+  <span>iPhone and iCloud are trademarks of Apple Inc. EvictLib is not affiliated with Apple.</span>
+</footer>
+
+<script>
+(() => {
+  const stage = document.getElementById('stage');
+  const segs = [...document.querySelectorAll('#bar i')];
+  const items = [...document.querySelectorAll('#legend li:not(.note):not(.replay-li)')];
+  const caps = [...document.querySelectorAll('#caps .cap')];
+  const used = document.getElementById('used');
+  const status = document.getElementById('status');
+  const statusText = document.getElementById('status-text');
+  const CAP = 5; // GB, example library
+  // [videos, photos, live, bursts, screenshots] after each step
+  const K = [[2.3, 1.4, .55, .45, .3], [.9, 1.4, .55, .45, .3], [.9, 1.1, .55, .1, .3], [.9, 1.1, .2, .1, .3], [.9, .9, .2, .1, .1], [.9, .9, .2, .1, .1]];
+  const FOCUS = [[], [0], [1, 3], [2], [1, 4], []];
+  const ease = t => 1 - Math.pow(1 - t, 3);
+  const fmt = gb => gb >= 1 ? gb.toFixed(1) + ' GB' : Math.round(gb * 100) * 10 + ' MB';
+  const HOLD = 1300, STEP = 1900, DRAIN = 950; // ms
+  let last = -1, raf = 0, start = null;
+
+  function draw(t) {
+    const v = K[0].slice();
+    for (let i = 1; i < K.length; i++) {
+      const f = ease(Math.min(1, Math.max(0, (t - (i - 1) * STEP) / DRAIN)));
+      for (let k = 0; k < 5; k++) v[k] += (K[i][k] - K[i - 1][k]) * f;
+    }
+    const total = v.reduce((a, b) => a + b, 0);
+    segs.forEach((el, k) => { el.style.flexBasis = (v[k] / CAP * 100) + '%'; });
+    items.forEach((el, k) => { el.querySelector('b').textContent = fmt(v[k]); });
+    used.textContent = total > 4.95 ? '5' : total.toFixed(1);
+    const free = CAP - total;
+    status.classList.toggle('free', free >= .05);
+    statusText.textContent = free >= .05 ? fmt(free) + ' available' : 'iCloud Storage Full';
+    const step = t < 0 ? 0 : Math.min(5, Math.floor(t / STEP) + 1);
+    if (step !== last) {
+      last = step;
+      caps.forEach((c, i) => c.classList.toggle('on', i === step));
+      if (FOCUS[step].length) stage.dataset.step = step; else delete stage.dataset.step;
+      items.forEach((el, k) => el.classList.toggle('dim', !FOCUS[step].includes(k)));
+    }
+    return step;
+  }
+  function frame(now) {
+    if (start === null) start = now;
+    raf = draw(now - start - HOLD) < 5 ? requestAnimationFrame(frame) : 0;
+  }
+  function play() {
+    cancelAnimationFrame(raf);
+    start = null; last = -1;
+    raf = requestAnimationFrame(frame);
+  }
+  document.getElementById('replay').addEventListener('click', play);
+  // Start the first run when the meter is actually on screen.
+  const io = new IntersectionObserver(([e]) => { if (e.isIntersecting) { io.disconnect(); play(); } }, { threshold: .4 });
+  io.observe(document.getElementById('bar'));
+})();
+</script>
 </body>
 </html>
