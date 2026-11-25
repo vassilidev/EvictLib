@@ -3,11 +3,46 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>EvictLib</title>
-<meta name="description" content="Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, no quota, nothing leaves your phone.">
-<meta property="og:title" content="EvictLib">
-<meta property="og:description" content="Free up iCloud Photos space on your iPhone. Biggest items first, no subscription, nothing leaves your phone.">
-<meta property="og:image" content="https://vassilidev.github.io/EvictLib/icon.png">
+<title>EvictLib · Free up iCloud Photos space on your iPhone</title>
+<meta name="description" content="Free up iCloud Photos space on your iPhone: largest items first, similar photos and bursts, HEVC and HEIC compression, swipe sorting. Free and open source, no subscription, nothing leaves your phone.">
+<meta name="author" content="Vassili JOFFROY">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<link rel="canonical" href="https://vassilidev.github.io/EvictLib/">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="EvictLib">
+<meta property="og:url" content="https://vassilidev.github.io/EvictLib/">
+<meta property="og:title" content="EvictLib · Free up iCloud Photos space on your iPhone">
+<meta property="og:description" content="148 GB of photos down to 108 in one session. Biggest items first, no subscription, nothing leaves your iPhone.">
+<meta property="og:image" content="https://vassilidev.github.io/EvictLib/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="EvictLib: 148 to 108 GB of photos, 40 GB of iCloud freed">
+<meta property="og:locale" content="en_US">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="EvictLib · Free up iCloud Photos space on your iPhone">
+<meta name="twitter:description" content="148 GB of photos down to 108 in one session. Biggest items first, no subscription, nothing leaves your iPhone.">
+<meta name="twitter:image" content="https://vassilidev.github.io/EvictLib/og.png">
+<meta name="apple-mobile-web-app-title" content="EvictLib">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "EvictLib",
+  "description": "Free up iCloud Photos space on your iPhone: largest items first, similar photos and bursts, HEVC and HEIC compression, swipe sorting. Free and open source, no subscription, nothing leaves your phone.",
+  "url": "https://vassilidev.github.io/EvictLib/",
+  "image": "https://vassilidev.github.io/EvictLib/og.png",
+  "screenshot": ["https://vassilidev.github.io/EvictLib/home-light.jpg", "https://vassilidev.github.io/EvictLib/swipe-dark.jpg", "https://vassilidev.github.io/EvictLib/home-dark.jpg"],
+  "applicationCategory": "UtilitiesApplication",
+  "operatingSystem": "iOS 17 or later",
+  "downloadUrl": "https://github.com/vassilidev/EvictLib/releases/latest/download/EvictLib.ipa",
+  "softwareVersion": "1.0",
+  "license": "https://opensource.org/licenses/MIT",
+  "isAccessibleForFree": true,
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "author": { "@type": "Person", "name": "Vassili JOFFROY", "url": "https://github.com/vassilidev" },
+  "sameAs": ["https://github.com/vassilidev/EvictLib"]
+}
+</script>
 <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
 <link rel="icon" href="icon.png">
@@ -104,10 +139,10 @@
   }
   .figure .of { color: var(--label-dim); font-weight: 600; font-size: .5em; letter-spacing: -.025em; }
   .bar {
-    margin-top: clamp(20px, 4svh, 36px); height: clamp(56px, 12.5svh, 120px); display: flex; gap: 4px; padding: 4px;
-    background: var(--track); border-radius: clamp(16px, 2.6svh, 28px); overflow: hidden;
+    margin-top: clamp(20px, 4svh, 36px); height: clamp(34px, min(12.5svh, 8vw), 120px); display: flex; gap: 4px; padding: 4px;
+    background: var(--track); border-radius: clamp(12px, min(2.6svh, 2vw), 28px); overflow: hidden;
   }
-  .bar i { --r: clamp(12px, 2.1svh, 24px); display: block; flex: 0 1 auto; min-width: 0; border-radius: 6px; }
+  .bar i { --r: clamp(9px, min(2.1svh, 1.6vw), 24px); display: block; flex: 0 1 auto; min-width: 0; border-radius: 6px; }
   .bar i:first-child { border-radius: var(--r) 6px 6px var(--r); }
   .bar i:last-child { border-radius: 6px var(--r) var(--r) 6px; }
   .legend { margin: clamp(14px, 2.6svh, 24px) 0 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 10px clamp(20px, 3vw, 44px); font-size: clamp(.9375rem, 1.3vw, 1.1875rem); }
@@ -218,7 +253,7 @@
   .bar i.freed {
     display: flex; align-items: center; justify-content: center; overflow: hidden; white-space: nowrap;
     background: color-mix(in srgb, var(--mint) 16%, transparent); box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--mint) 55%, transparent);
-    color: var(--mint); font-style: normal; font-weight: 700; font-size: clamp(14px, 1.5vw, 22px); letter-spacing: -.01em;
+    color: var(--mint); font-style: normal; font-weight: 700; font-size: clamp(12px, 1.5vw, 22px); letter-spacing: -.01em;
   }
   .finale .btn.gh { color: #1C1C1E; }
   .finale .btn.gh:hover { background: #D2D2D7; }
